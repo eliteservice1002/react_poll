@@ -25,20 +25,46 @@ const PollWrapper = styled.div`
     justify-content: space-between;
     position: relative;
     margin-bottom: 10px;
-    & .portion {
+    & .meter {
       position: absolute;
       left: 0;
-      background: #e8e8e8;
       height: -webkit-fill-available;
       top: 0;
       border-bottom-left-radius: 7px;
       border-top-left-radius: 7px;
+      overflow: hidden;
+      & span {
+        display: block;
+        height: 100%;
+      }
     }
+
+    & .progress {
+      background-color: #e8e8e8;
+      animation: progressBar 1s ease-in-out;
+      animation-fill-mode: both;
+    }
+
+    & .progress-max {
+      background-color: cyan;
+      animation: progressBar 1s ease-in-out;
+      animation-fill-mode: both;
+    }
+
+    @keyframes progressBar {
+      0% {
+        width: 0;
+      }
+      100% {
+        width: 100%;
+      }
+    }
+
     & .animalname {
       z-index: 1;
     }
     & .circlecheck {
-      height: 25px;
+      height: 20px;
       z-index: 1;
       margin-left: 15px;
     }
@@ -84,25 +110,28 @@ export default function Poll({ qandas }: Props) {
 
   return (
     <PollWrapper>
-      <div key={activeQuestion}>
+      <div>
         <h2>{qandas.questions[activeQuestion].question.text}</h2>
         {qandas.questions[activeQuestion].answers.map((answer, index) => (
           <div
             className="answer"
             onClick={() => handleAnswerClick(activeQuestion, index)}
-            key={index}
           >
-            <div
-              className="portion"
-              style={{
-                width: Math.round((answer.votes / total_votes) * 100) + '%',
-                backgroundColor: max_index === index ? 'cyan' : '',
-              }}
-            ></div>
+            <div className="meter" style={{ width: '100%' }}>
+              <span
+                style={{
+                  width: Math.round((answer.votes / total_votes) * 100) + '%',
+                }}
+              >
+                <span
+                  className={max_index === index ? 'progress-max' : 'progress'}
+                ></span>
+              </span>
+            </div>
             <div className="divitem">
               <span
                 className="animalname"
-                style={{ fontWeight: max_index === index ? 'bold' : '' }}
+                style={{ fontWeight: max_index === index ? 'bold' : 'normal' }}
               >
                 {answer.text}
               </span>
@@ -113,7 +142,9 @@ export default function Poll({ qandas }: Props) {
                 />
               )}
             </div>
-            <span style={{ fontWeight: max_index === index ? 'bold' : '' }}>
+            <span
+              style={{ fontWeight: max_index === index ? 'bold' : 'normal' }}
+            >
               {Math.round((answer.votes / total_votes) * 100) + '%'}
             </span>
           </div>
